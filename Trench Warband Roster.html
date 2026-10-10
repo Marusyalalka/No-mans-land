@@ -1327,6 +1327,121 @@ V({ id:"dirge", fac:"bg", n:"Dirge of the Great Hegemon",
 
 </script>
 <script>
+// ================= HERETIC NAVAL RAIDERS (stand-alone faction, book v1.0.2) =================
+// Rule texts are short paraphrases; the book is the authority.
+I("boarding_axe","Boarding Axe","1H","Melee",["ARMOUR PIERCING","CRITICAL","RISKY"],"Boarding: +1 DICE to Risky rolls for friendly models with this rule that Climb a sheer surface.");
+I("hull_drill","Hull Drill","1H","Melee",["CRITICAL","HELD","IGNORE ARMOUR","RISKY"],"");
+I("wreckers_torch","Wrecker's Torch","2H","Melee",["ARMOUR PIERCING","BLOCK","CUMBERSOME","FIRE"],"");
+I("shark_talisman","Shark Tooth Talisman","EQ","-",["CONSUMABLE","NEGATE FEAR"],"Blood Frenzy: once per game, if any model (friend or foe) within 1\" has a Blood Marker, the bearer gets +1 DICE to its melee attack rolls for the rest of its activation.");
+
+(function () {
+  const UNSEEN = { id:"unseen", n:"Unseen Advance", cost:10, kw:["INFILTRATOR"], max:3, x:"Gains INFILTRATOR. At most 3 non-ELITE models in the warband." };
+  const PUPPET = ["Puppet Master ACTION","Risky roll. On success, move any model (friend or foe, not itself) within 12\" and in sight D6\" in a straight line. The move may bring it within 1\" of an enemy, retreat it, or Climb, Jump across or Jump down."];
+  FACTIONS.push({
+    id: "hnr", n: "Heretic Naval Raiders", short: "Heretic Naval Raiders", align: "Fallen", tag: "HERETIC", mercAs: "hl",
+    blurb: "Fast shock troops of the Heretic fleet: submachine guns, boarding axes, infiltrators and Sea Hags laying infernal mines.",
+    rules: [
+      ["Fast as Lightning", "+1 DICE to the Risky roll when any model of the warband takes a Dash ACTION."],
+      ["Unseen Advance", "Up to 3 non-ELITE models may have INFILTRATOR for +10 each."],
+      ["Mercenaries", "May hire any Fallen Mercenary that a Heretic Legions warband can hire."]
+    ],
+    armoury: [
+      A("ranged","am_rifle","3g",{lim:1}), A("ranged","auto_rifle","2g",{stip:[LUG],lim:2}), A("ranged","auto_shotgun",15,{stip:[LUG,SC]}),
+      A("ranged","bolt_rifle",10,{stip:[LUG]}), A("ranged","flamethrower",30,{lim:3}), A("ranged","grenade_launcher",30,{lim:2}),
+      A("ranged","heavy_flamer",55,{lim:2}), A("ranged","machine_gun",50,{lim:1}), A("ranged","pistol",6),
+      A("ranged","semi_rifle",15,{stip:[LUG]}), A("ranged","shotgun",10,{stip:[LUG,SC]}), A("ranged","silenced_pistol",15,{only:["ELITE"]}),
+      A("ranged","smg",25,{stip:[LUG,SC]}),
+      A("melee","bayonet",2,{stip:[SC]}), A("melee","blasphemous_staff","2g",{only:["ELITE"]}), A("melee","boarding_axe",10),
+      A("melee","great_hammer",10), A("melee","great_sword",12), A("melee","hellblade","1g",{lim:2}),
+      A("melee","hull_drill",20,{only:["abyssal"]}), A("melee","polearm",7,{stip:[SC]}),
+      A("melee","sacrificial_blade",23,{only:["ELITE"],lim:2}), A("melee","sword",4), A("melee","tartarus_claws",15,{only:["abyssal"]}),
+      A("melee","trench_club",3), A("melee","trench_knife",1), A("melee","wreckers_torch",15,{only:["ELITE"],stip:[SC]}),
+      A("grenade","frag",7), A("grenade","gas_gren",10), A("grenade","incendiary",15),
+      A("shield","trench_shield",10,{stip:[SC]}),
+      A("armour","reinforced",40,{only:["anointed","ELITE"]}), A("armour","standard",15),
+      A("equipment","combat_helmet",5,{stip:[HG]}), A("equipment","gas_mask",5),
+      A("equipment","soul_contract",5,{only:["raider"],lim:3}), A("equipment","incendiary_ammo",15,{stip:[CON],lim:1}),
+      A("equipment","infernal_brand",5), A("equipment","mountaineer",3,{lim:2}), A("equipment","musical_instrument",15,{lim:1}),
+      A("equipment","shark_talisman",10,{stip:[CON],lim:2}), A("equipment","shovel",5), A("equipment","troop_flag","1g",{lim:1}),
+      A("equipment","unholy_relic",15), A("equipment","unholy_trinket",15,{stip:[CON]})
+    ],
+    models: [
+      M({ id:"captain", n:"Heretic Captain", cost:80, min:1, max:1, leader:true, elite:true, mv:'6"', r:2, m:2, a:0, base:"32mm", kw:["HERETIC","ELITE","LEADER","TOUGH"], ab:[PUPPET] }),
+      M({ id:"abyssal", n:"Abyssal Commando", cost:90, max:1, elite:true, mv:'6"', r:1, m:2, a:0, base:"32mm", kw:["HERETIC","ELITE","INFILTRATOR"],
+        kit:{ only:{ ranged:["silenced_pistol","tormentor_chain"], grenade:["gas_gren"] } },
+        ups:[{ id:"abyssal_armour", n:"Abyssal Armour", cost:5, x:"Upgrade for Reinforced Armour. Terrain partly or wholly made of water counts as Open for it; touching such terrain it can use Fade ACTION, and counts as in Cover if the terrain is larger than a 32mm base." }],
+        ab:[["Fade ACTION","Touching water terrain or a terrain piece at least ½\" high: Risky roll at +1 DICE. On success it can't be targeted by ranged attacks or charges until it moves, charges, retreats, shoots, or an enemy comes within 1.5\" (blasts still hit)."],
+            ["Mist-Shrouded","-1 DICE to ranged attacks against it."]] }),
+      M({ id:"dchorister", n:"Drowned Chorister", cost:65, max:1, elite:true, mv:'6"', r:-2, m:2, a:0, base:"32mm", kw:["HERETIC","ELITE","FEAR"],
+        ups:[{ id:"bell", n:"Leviathan Bell", cost:10, ab:[["Leviathan Bell","No Risky roll to Climb or Jump, and no Injury Roll from falling."]], x:"No Risky roll to Climb or Jump, and no Injury Roll from falling." }],
+        ab:[["Unholy Hymns","Enemies within 8\" of any Choristers get -1 DICE on Success Rolls."]] }),
+      M({ id:"raider", n:"Heretic Raider", cost:30, mv:'6"', r:0, m:0, a:0, base:"25mm", kw:["HERETIC"],
+        opts:[{ id:"leg", n:"Rank", choices:[ {id:"trooper",n:"Heretic Raider",cost:0}, {id:"leg_r",n:"Legionnaire, +1 Ranged (+10)",cost:10,set:{r:1},rename:"Heretic Raider Legionnaire"}, {id:"leg_m",n:"Legionnaire, +1 Melee (+10)",cost:10,set:{m:1},rename:"Heretic Raider Legionnaire"} ] }],
+        ups:[UNSEEN],
+        ab:[["Heretic Raider Legionnaires","Raiders may become Legionnaires (+10, Ranged or Melee goes from +0 to +1). Legionnaires can never outnumber plain Raiders."]] }),
+      M({ id:"wretched", n:"Wretched", cost:25, mv:'6"', r:-1, m:-1, a:0, base:"25mm", kw:["HERETIC"],
+        kit:{ maxItemCost:10, needWeapon:true }, ups:[UNSEEN],
+        ab:[["Chattel","In a campaign, can be sold for 25 plus half the cost of its battlekit."],
+            ["Dark Blessing","When taken Out of Action, the nearest friendly ELITE HERETIC gains a Blessing Marker."],
+            ["Law of Hell","If it takes an enemy ELITE Out of Action it is freed and leaves the warband."],
+            ["Cheap Gear","Only battlekit costing 10 or less, and must carry at least one weapon."]] }),
+      M({ id:"anointed", n:"Anointed Heretic Raider", cost:95, max:2, mv:'6"', r:1, m:1, a:-2, base:"32mm", kw:["HERETIC","STRONG"],
+        kit:{ fixed:["reinforced","infernal_brand"], deny:["armour"] }, ups:[UNSEEN] }),
+      M({ id:"seahag", n:"Sea Hag", cost:100, max:1, mv:'6"', r:0, m:-1, a:0, base:"32mm", kw:["HERETIC","ARTIFICIAL","NEGATE FEAR","NEGATE GAS"],
+        kit:{ fixed:["infernal_bomb"], deny:["ranged","grenade"] },
+        ups:[UNSEEN, { id:"mines", n:"Infernal Mines", cost:10, ab:[["Infernal Mines","After scatter, a bomb may be left as a mine marker (only 1 in play). It goes off when an enemy ends a move within 3\" (you may interrupt its activation), or with a Detonate ACTION at the start of the Sea Hag's activation, resolving as an Infernal Bomb."]],
+          x:"Infernal Bombs can be left on the table as a mine and detonated later." }],
+        ab:[["Abiotic Life","-1 INJURY DICE against GAS attacks."],
+            ["Levitate","No Risky roll to Climb or Jump, and no Injury Roll from falling."]] })
+    ],
+    variants: ["choir","shoal"]
+  });
+
+  V({ id:"choir", fac:"hnr", n:"The Drowned Choir",
+    blurb:"Drifting choirs of Drowned Choristers and the Wretched driven mad by their song.",
+    rules:[["A Song Within the Deep","Must include 1-3 Drowned Choristers; exactly one takes Leviathal Chorus (+20): 40mm base, LEADER and TOUGH, and Dread Harmony instead of Unholy Hymns."],
+      ["Dread Harmony","Enemy Success Rolls within 8\" of the Leviathal Chorus become Risky Success Rolls."],
+      ["A Wretched Chorus","Wretched cost 30 and have Melee +0; within 8\" of any Chorister or Leviathal Chorus they have Melee +1."],
+      ["Mounting Madness","A Chorister's Unholy Hymns reaches 4\" further while within 8\" of another friendly Chorister or the Leviathal Chorus."],
+      ["To No Purpose Save Their Own","No Heretic Captain, Abyssal Commando, Sea Hag or Anointed Heretic Raiders."]],
+    apply(F) {
+      dropModel(F, "captain", "abyssal", "seahag", "anointed");
+      const c = mdl(F, "dchorister"); c.min = 1; c.max = 3; c.leader = true;
+      c.ab.push(["Mounting Madness", "Unholy Hymns reaches 4\" further while within 8\" of another friendly Chorister or the Leviathal Chorus."]);
+      c.ups.push({ id:"chorus", n:"Leviathal Chorus", cost:20, max:1, kw:["LEADER","TOUGH"], base:"40mm", dropAb:["Unholy Hymns","Mounting Madness"],
+        ab:[["Dread Harmony","Enemy Success Rolls within 8\" become Risky Success Rolls (no extra effect if already Risky)."]],
+        x:"40mm base, LEADER and TOUGH, Dread Harmony replaces Unholy Hymns. Exactly one Chorister must take it." });
+      const w = mdl(F, "wretched"); w.cost = 30; w.m = 0;
+      w.ab.push(["A Wretched Chorus", "Melee +1 instead of +0 while within 8\" of any Chorister or the Leviathal Chorus."]);
+      F.validate.push((W, X) => { const n = X.countUp("chorus"); return n === 1 ? [] : ["A Song Within the Deep: exactly one Drowned Chorister must take Leviathal Chorus (" + n + ")."]; });
+    }
+  });
+
+  V({ id:"shoal", fac:"hnr", n:"The Leviathan Shoal",
+    blurb:"Shark-worshipping raiders of Leviathan who favour blades over guns.",
+    rules:[["Only the Strong Survive","0-4 Anointed Heretic Raiders, and one of them may be ELITE for free. The Heretic Captain has STRONG. No Drowned Choristers, Wretched or Sea Hags."],
+      ["Charge and Rend","The warband can't have more ranged weapons than melee weapons, and no ranged weapons with HEAVY. Sacrificial Blades are Limit 4 and Anointed Heretic Raiders may take them."],
+      ["Feeding Frenzy","+1 DICE to melee attack rolls for each model (friend or foe) with Blood Markers within 1\" of the attacker, up to +3 DICE."],
+      ["Chosen Sons","The first time in a game an Anointed Heretic Raider takes an enemy Out of Action in melee, it gains TOUGH for the rest of the game."]],
+    apply(F) {
+      dropModel(F, "dchorister", "wretched", "seahag");
+      mdl(F, "captain").kw.push("STRONG");
+      const a = mdl(F, "anointed"); a.max = 4;
+      a.ups.push({ id:"chosen", n:"Chosen Son (ELITE)", cost:0, elite:true, max:1, x:"One Anointed Heretic Raider can be recruited with the ELITE Keyword at no extra cost." });
+      a.ab.push(["Chosen Sons", "The first time in a game it takes an enemy Out of Action in melee, it gains TOUGH for the rest of the game."]);
+      F.armoury = F.armoury.filter(e => !(e.cat === "ranged" && ITEMS[e.item] && ITEMS[e.item].k.includes("HEAVY")));
+      const sb = arm(F, "sacrificial_blade"); sb.lim = 4; sb.only = ["ELITE", "anointed"];
+      F.validate.push((W, X) => {
+        let r = 0, m = 0; W.models.forEach(md => X.items(md).forEach(i => { const c = itemCat(i); if (c === "ranged") r++; else if (c === "melee") m++; }));
+        const out = r > m ? ["Charge and Rend: more ranged weapons (" + r + ") than melee weapons (" + m + ")."] : [];
+        W.models.forEach(md => X.items(md).forEach(i => { if (itemCat(i) === "ranged" && ITEMS[i].k.includes("HEAVY")) out.push("Charge and Rend: no HEAVY ranged weapons (" + ITEMS[i].n + ")."); }));
+        return out;
+      });
+    }
+  });
+})();
+</script>
+<script>
 // ================= ENGINE =================
 const HEADGEAR = new Set(["combat_helmet","iron_capirote","anfarro","compound_eyes"]);
 const CATS = ["ranged","melee","grenade","shield","armour","equipment"];
@@ -1412,7 +1527,7 @@ function Ctx(W) {
       if (c.ab) e.ab.push(...c.ab); if (c.dropAb) e.ab = e.ab.filter(a => !c.dropAb.includes(a[0])); });
     def.ups.forEach(u => { if (!X.hasUp(m, u.id)) return;
       if (u.kw) u.kw.forEach(k => { if (!e.kw.includes(k)) e.kw.push(k); });
-      if (u.set) Object.assign(e, u.set); if (u.base && parseInt(u.base) > parseInt(e.base)) e.base = u.base; if (u.ab) e.ab.push(...u.ab); if (u.elite) e.elite = true; });
+      if (u.set) Object.assign(e, u.set); if (u.base && parseInt(u.base) > parseInt(e.base)) e.base = u.base; if (u.ab) e.ab.push(...u.ab); if (u.dropAb) e.ab = e.ab.filter(a => !u.dropAb.includes(a[0])); if (u.elite) e.elite = true; });
     ((W.goetic && W.goetic[m.uid]) || []).forEach(pid => { const p = (typeof GOETIC !== "undefined") && GOETIC.find(x => x.id === pid); if (!p) return;
       (p.kw || []).forEach(k => { if (!e.kw.includes(k)) e.kw.push(k); }); (p.dropKw || []).forEach(k => { e.kw = e.kw.filter(x => x !== k); }); });
     const dog = m.dog && X.bought(m).includes("trench_dog") && typeof DOG_TRAINING !== "undefined" ? m.dog : null;
@@ -1693,6 +1808,11 @@ function Ctx(W) {
       const pc = {}; Object.values(W.goetic || {}).forEach(ps => ps.forEach(p => pc[p] = (pc[p] || 0) + 1));
       Object.entries(pc).forEach(([p, n]) => { const g = GOETIC.find(x => x.id === p); if (g && g.lim && n > g.lim) out.push(g.n + ": Limit " + g.lim + "."); });
     }
+    if (W.fac === "hnr") {
+      const leg = W.models.filter(m => m.type === "raider" && m.opts && m.opts.leg && m.opts.leg !== "trooper").length;
+      const plain = X.countType("raider") - leg; if (leg > plain) out.push("Heretic Raider Legionnaires can't outnumber plain Heretic Raiders.");
+      W.models.forEach(m => { if (X.hasUp(m, "abyssal_armour") && !X.items(m).includes("reinforced")) out.push(X.label(m) + ": Abyssal Armour is an upgrade of Reinforced Armour."); });
+    }
     if (W.fac === "hl") {
       const leg = W.models.filter(m => m.type === "trooper" && m.opts && m.opts.leg && m.opts.leg !== "trooper").length;
       const tr = X.countType("trooper") - leg; if (leg > tr) out.push("Heretic Legionnaires can't outnumber plain Heretic Troopers.");
@@ -1776,7 +1896,7 @@ function Ctx(W) {
     if (W.free) return true;
     if (F.noMercs || (F.mercBan || []).includes(d.id)) return false;
     if (d.factions === "all") return true;
-    return d.factions.includes(W.fac);
+    return d.factions.includes(W.fac) || (!!F.mercAs && d.factions.includes(F.mercAs));
   };
   X.canAdd = (m, key) => {
     if (W.free) return null;
@@ -2024,6 +2144,13 @@ const DOG_TRAINING = [
     x: () => "Has and can use a Medi-kit. Starting in contact with a Down friend more than 1\" from enemies, it can drag that friend along at half Movement (not when charging or retreating)." }
 ];
 
+</script>
+<script>
+// ---- Heretic Naval Raiders: campaign tables (same Patrons and Glory Items as the Heretic Legions) ----
+PATRONS.forEach(p => { if (p.facs.includes("hl") && !p.facs.includes("hnr")) p.facs.push("hnr"); });
+GLORY_ITEMS.hnr = GLORY_ITEMS.hl.map(x => [x[0], x[1], Object.assign({}, x[2])]);
+NO_PROMOTE.hnr = ["wretched"];
+MAX7XP.hnr = ["seahag"];
 </script>
 <script>
 // ================= APP =================
